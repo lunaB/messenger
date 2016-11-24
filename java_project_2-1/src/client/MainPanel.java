@@ -13,7 +13,7 @@ public class MainPanel extends JPanel{
 	public MainPanel(Client c){
 		this.client = c;
 		client.setSize(client.dsizeW,client.dsizeH);
-		c.card_con.setBackground(c.def_color[2]);
+		client.card_con.setBackground(c.def_color[2]);
 		setLayout(null);
 	}
 }

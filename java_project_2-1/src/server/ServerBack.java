@@ -13,14 +13,13 @@ import java.util.Map;
 
 public class ServerBack {
 
-	//key 값은 id가 들어가고 values 값은 메세지 전송 경로가 들어갈것입니다.
+	//key = id(email), values = dataOutputStream
 	private Map<String , DataOutputStream> client_map = new HashMap<String, DataOutputStream>();
 	private ServerSocket serverSocket;
 	
-	Server server; //GUI 입니다.
+	final private int port = 6767;
 	
-	
-	//gui 가져오기
+	Server server; //GUI
 	public final void setGUI(Server server){
 		this.server = server;
 	}
@@ -29,13 +28,13 @@ public class ServerBack {
 		//thread 사용으로 인한 충돌 방지
 		Collections.synchronizedMap(client_map);
 		
-		serverSocket = new ServerSocket(6767);
+		serverSocket = new ServerSocket(port);
 		server.append_log("서버 준비완료");
 		ServerStart serverStart = new ServerStart();
 		serverStart.start();
 	}
 	
-	public void send_message(String msg){ //모두에게 뿌림
+	public void send_message(String msg){ //뿌리기
 		Iterator<DataOutputStream> it = client_map.values().iterator();
 		while(it.hasNext()){
 			try {

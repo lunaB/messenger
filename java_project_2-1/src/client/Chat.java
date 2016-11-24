@@ -1,6 +1,8 @@
 package client;
 
-public class Chat {
+import javax.swing.JPanel;
+
+public class Chat extends JPanel{
 	Client client;
 	public Chat(Client c){
 		this.client = c;
