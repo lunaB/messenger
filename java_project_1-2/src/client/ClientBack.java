@@ -14,8 +14,8 @@ public class ClientBack {
 	private Socket socket;
 	private DataInputStream in;
 	private DataOutputStream out;
-	private Client client;
-	private Chat chat;
+	private Client client; //change panel
+	private Chat chat; //chat
 	
 	final private String host = "127.0.0.1";
 	final private int port = 6767;
@@ -53,20 +53,19 @@ public class ClientBack {
 		}
 	}
 	
-	public void sendMsg(String msg){
+	public void sendMsg(String msg){// chat 에서사용
 		try {
 			out.writeUTF(msg);
 		} catch (IOException e) {
 			//전송실패 뭔가 보여줘야함
-			e.printStackTrace();
+			e.printStackTrace(); 
 		}
 	}
-	/*
+	
 	public void setname(String name) {
         this.name = name;
     }
-    */
-	
+    
 	public boolean loginOK(){
 		return (mail==""||name==""?false:true);
 	}

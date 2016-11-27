@@ -3,7 +3,6 @@ package main;
 import javax.swing.JOptionPane;
 
 import client.Client;
-import jdbc.DAO;
 import server.Server;
 
 /*

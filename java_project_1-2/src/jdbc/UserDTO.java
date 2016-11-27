@@ -1,8 +1,9 @@
 package jdbc;
 
 public class UserDTO {
+	
 	private int num;
-	private String  name;
+	private String name;
 	private String email;
 	private String pw;
 	private String join_date;
@@ -37,5 +38,6 @@ public class UserDTO {
 	public void setJoin_date(String join_date) {
 		this.join_date = join_date;
 	}
+	
 	
 }
