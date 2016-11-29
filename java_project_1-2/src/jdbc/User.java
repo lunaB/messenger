@@ -14,9 +14,7 @@ public class User {
 	//Singleton 패턴을 채택함
 	private static User user;
 	
-	
 	private Connection _dbConn;
-	
 	
 	static { //한번만로드
 		final String JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
@@ -70,25 +68,22 @@ public class User {
 		}
 	}
 	
-	//----------user
-	
+	//join
 	public boolean isMailOverlap(String mail){
-		String sql = "select * from member where mail = ?";
+		String sql = "select * from member where email = ?";
 		try {
 			PreparedStatement mailSelect_ps = _dbConn.prepareStatement(sql);
-			mailSelect_ps.setString(1, mail);
+			mailSelect_ps.setString(1, mail+"@gmail.com");
 			ResultSet re = mailSelect_ps.executeQuery();
-			if(re.getRow()>0){
-				return false;
-			}else{
+			if(re.getRow()==0){
 				return true;
+			}else{
+				return false;
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return false;
 		}
-		return false;
-		
 		
 	}
 	
@@ -112,44 +107,23 @@ public class User {
 	}
 	
 	
-	
-	
-	
-	
-	/*
-	public boolean insertMail(String code,String name,String email){
-		String sql = "insert into mail values(?,?,?)";
+	//login
+	public String login(String id,String pw){
+		String sql = "select * from member where email = ? and pw = ?";
 		try {
-			PreparedStatement mail_ps = _dbConn.prepareStatement(sql);
-			mail_ps.setString(1, code);
-			mail_ps.setString(2, name);
-			mail_ps.setString(3, code);
-			int cRow = mail_ps.executeUpdate();
-			if(cRow == 1){
-				return true;
-			}
+			PreparedStatement loginOk_ps = _dbConn.prepareStatement(sql);
+			loginOk_ps.setString(1, id);
+			loginOk_ps.setString(2, pw);
+			ResultSet res = loginOk_ps.executeQuery();
+			
+			if(res.next())
+				return res.getString(2);
+			else
+				return null;
 		} catch (SQLException e) {
-			dbError("데이터베이스 쿼리에 문제가 발생하였습니다\nError : "+e.getErrorCode());
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return false;
+		return null;
 	}
-	
-	public boolean selectMail(String mail,String code){
-		String sql = "select * from mail where mail = ?";
-		PreparedStatement mail_ps = null;
-		try {
-			mail_ps = _dbConn.prepareStatement(sql);
-			mail_ps.setString(1, mail);
-			ResultSet re = mail_ps.executeQuery();
-			if(re.getRow() == 1){
-				return true;
-			}
-		} catch (SQLException e) {
-			dbError("데이터베이스 쿼리에 문제가 발생하였습니다\nError : "+e.getErrorCode());
-			e.printStackTrace();
-		}
-		return false;
-	}
-	*/
 }

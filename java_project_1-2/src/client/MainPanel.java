@@ -10,11 +10,8 @@ import javax.swing.border.EmptyBorder;
 
 public class MainPanel extends JPanel{
 	
-	JLabel reserved = new JLabel("2016. By 나영채 All Rights Reserved.");
-	JButton login_btn = new JButton("로그인"); //-> login
-	JButton join_btn = new JButton("회원가입"); //-> join
-	
 	Client client;
+	
 	public MainPanel(Client c){
 		this.client = c;
 		setBackground(client.def_color[2]);
@@ -22,6 +19,10 @@ public class MainPanel extends JPanel{
 		
 		JPanel iconPan = new JPanel();
 		JPanel btnPan = new JPanel();
+		
+		JLabel reserved = new JLabel("(c)2016. By 나영채 All Rights Reserved.");
+		JButton login_btn = new JButton("로그인"); //-> login
+		JButton join_btn = new JButton("회원가입"); //-> join
 		
 		iconPan.setSize(client.dsizeW,client.dcardH-150);
 		iconPan.setLocation(0, 0);
@@ -37,7 +38,7 @@ public class MainPanel extends JPanel{
 		login_btn.setFont(client.def_font(15));
 		login_btn.setForeground(Color.WHITE);
 		login_btn.addActionListener(e->{
-			client.changeCard("login_btn"); //->login
+			client.changeCard("login"); //->login
 		});
 		
 		join_btn.setBackground(client.def_color[3]);

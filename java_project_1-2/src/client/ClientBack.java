@@ -14,43 +14,43 @@ public class ClientBack {
 	private Socket socket;
 	private DataInputStream in;
 	private DataOutputStream out;
-	private Client client; //change panel
 	private Chat chat; //chat
 	
 	final private String host = "127.0.0.1";
 	final private int port = 6767;
 	
-	
-	public void setChat(Chat chat){
-		this.chat = chat;
+	public void conn(Client c){
+		
+		mail = c.getMail();
+		name = c.getUserName();
+		Wait w =new Wait();
+		w.start();
 	}
 	
-	public void connect(){
-		try {
-			socket = new Socket(host, port);
-			//연결안되는거 따로 처리 나중에
-			out = new DataOutputStream(socket.getOutputStream());
-			in = new DataInputStream(socket.getInputStream());
-			//map에 넣을 메일보냄
-			out.writeUTF(mail);
-			read();
-			
-		}catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void read(){ //in connect()
-		while(in!=null){
+	class Wait extends Thread{
+		@Override
+		public void run() {
 			try {
-				String msg = in.readUTF();
-				//여기다가 나중에 비속어 필터 추가해야함
-				//chat.appendmsg(msg);
-				
-			} catch (IOException e) {
+				socket = new Socket(host, port);
+				//연결안되는거 따로 처리 나중에
+				out = new DataOutputStream(socket.getOutputStream());
+				in = new DataInputStream(socket.getInputStream());
+				//server - map
+				//id-name server 85line
+				out.writeUTF(mail+"-"+name);
+				while(in!=null){
+					String msg = in.readUTF();
+					String msgI[] = msg.split("-");
+					chat.appendMsg(msgI[1],msgI[0]);
+				}
+			}catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public void setChat(Chat chat){
+		this.chat = chat;
 	}
 	
 	public void sendMsg(String msg){// chat 에서사용
@@ -62,23 +62,4 @@ public class ClientBack {
 		}
 	}
 	
-	public void setname(String name) {
-        this.name = name;
-    }
-    
-	public boolean loginOK(){
-		return (mail==""||name==""?false:true);
-	}
-	
-	public void login(String id,String name){
-		this.mail = id;
-		this.name = name;
-	}
-	
-	public void logout(){
-		this.mail = "";
-		this.name = "";
-		JOptionPane.showMessageDialog(null, "로그아웃 되었습니다.");
-		client.changeCard("mainPanel");
-	}
 }

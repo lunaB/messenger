@@ -20,7 +20,6 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import jdbc.User;
-import jdbc.UserDTO;
 import mail.Mail;
 
 public class Join extends JPanel{
@@ -32,7 +31,7 @@ public class Join extends JPanel{
 	JPanel mail_pan = new JPanel();
 	JTextField mail_fld = new JTextField(20);
 	
-	JPanel userName = new JPanel();
+	JPanel userName_pan = new JPanel();
 	JTextField name_fld = new JTextField(20);
 	
 	JPanel code_pan = new JPanel();
@@ -48,12 +47,11 @@ public class Join extends JPanel{
 	JButton ok_btn = new JButton("¿Ï·á");
 	
 	Mail codeMail = new Mail();
-	//dao ÇÒÂ÷·ÊÀÓ -----------------------------------------------
 	final private int codeLength = 6;
 	String code = "";
 	
 	User userDB = User.getUser();
-	
+	//User userDB = new User();
 	
 	public Join(Client c){
 		
@@ -61,18 +59,20 @@ public class Join extends JPanel{
 		setBackground(client.def_color[1]);
 		setLayout(null);
 		
+		JLabel reserved = new JLabel("(c)2016. By ³ª¿µÃ¤ All Rights Reserved.");
+		
 		form_pan.setSize(client.dsizeW,client.dcardH);
 		form_pan.setLayout(new GridLayout(6, 1, 15, 15));
 		form_pan.setBorder(new EmptyBorder(100, 40, 0, 40));
 		form_pan.setOpaque(false);
 		
-		userName.setLayout(new GridLayout(2, 2, 4, 4));
+		userName_pan.setLayout(new GridLayout(2, 2, 4, 4));
 		name_fld.setBackground(client.def_color[0]);
-		userName.add(new JLabel());
-		userName.add(new JLabel());
-		userName.add(new JLabel("ÀÌ¸§ ÀÔ·Â"));
-		userName.add(name_fld);
-		userName.setOpaque(false);
+		userName_pan.add(new JLabel());
+		userName_pan.add(new JLabel());
+		userName_pan.add(new JLabel("ÀÌ¸§ ÀÔ·Â"));
+		userName_pan.add(name_fld);
+		userName_pan.setOpaque(false);
 		
 		mail_pan.setLayout(new GridLayout(2, 2, 4, 4));
 		mail_fld.setBackground(client.def_color[0]);
@@ -87,13 +87,18 @@ public class Join extends JPanel{
 		codeSub_btn.setBackground(client.def_color[3]);
 		codeSub_btn.setForeground(Color.WHITE);
 		codeSub_btn.addActionListener(e->{
-			if(!isMatches("[0-9a-zA-Z]{1,}",mail_fld.getText())){
-				warningMsg("¸ŞÀÏ ÀÔ·ÂÇü½Ä¿¡ ¾î±ß³³´Ï´Ù.");
-			}else if(userDB.isMailOverlap(mail_fld.getText())){
-				warningMsg("ÀÌ¹Ì °¡ÀÔµÈ ¸ŞÀÏÀÔ´Ï´Ù.");
+			userDB.dbConnect();
+			boolean mailOverlap = userDB.isMailOverlap(mail_fld.getText());
+			
+			if(!isMatches("[°¡-ÆRa-zA-Z0-9]{1,}", name_fld.getText())){
+				client.warningMsg("ÀÌ¸§ ÀÔ·Â Çü½Ä¿¡ ¾î±ß³³´Ï´Ù.");
+			}else if(!isMatches("[a-zA-Z0-9]{1,}",mail_fld.getText())){
+				client.warningMsg("¸ŞÀÏ ÀÔ·Â Çü½Ä¿¡ ¾î±ß³³´Ï´Ù.");
+			}else if(!mailOverlap){
+				client.warningMsg("ÀÌ¹Ì °¡ÀÔ µÇ¾îÀÖ´Â ¸ŞÀÏÀÔ´Ï´Ù.");
 			}else{
 				code = createCode();
-				codeMail.sendMail(mail_fld.getText(), code);
+				codeMail.mailSet(name_fld.getText(), mail_fld.getText(), code);
 				codeMail.send();
 				ok_btn.setEnabled(true);
 			}
@@ -121,36 +126,59 @@ public class Join extends JPanel{
 		ok_btn.setEnabled(false); //ºñÈ°¼º
 		ok_btn.setBackground(client.def_color[3]);
 		ok_btn.setForeground(Color.WHITE);
-		ok_btn.addActionListener(e->{ //OK
+		ok_btn.addActionListener(e->{ //OK debug 11-28
 			//Á¶°Ç¾È¸ÂÀ¸¸é ºüÁö°Ô
-			if(code_fld.getText() != code){
-				warningMsg("¸ŞÀÏ ÀÎÁõÄÚµå°¡ ¸ÂÁö ¾Ê½À´Ï´Ù.(´Ù½Ã Àü¼ÛÇÏ°í È®ÀÎÇÏ¼¼¿ä)");
+			if(!code_fld.getText().equals(code)){
+				client.warningMsg("¸ŞÀÏ ÀÎÁõÄÚµå°¡ ¸ÂÁö ¾Ê½À´Ï´Ù.(´Ù½Ã Àü¼ÛÇÏ°í È®ÀÎÇÏ¼¼¿ä)");
 				code = createCode();
 				ok_btn.setEnabled(false);
-			}else if(!isMatches("[A-Za-z0-1]{"+codeLength+"}", code_fld.getText())){
-				warningMsg("ÄÚµå Çü½ÄÀÌ ¸ÂÁö ¾Ê½À´Ï´Ù");
-			}else if(!isMatches("[]",new String(pw_fld.getPassword()))){
-				warningMsg("ºñ¹Ğ¹øÈ£°¡ ¾ç½Ä¿¡ ¸ÂÁö¾Ê½À´Ï´Ù.\n[¿µ¹®ÀÚ Æ¯¼ö¹®ÀÚ Á¦¿Ü]");
+			}else if(!isMatches("[a-zA-Z0-9]{"+codeLength+"}", code_fld.getText())){
+				client.warningMsg("ÄÚµå Çü½ÄÀÌ ¸ÂÁö ¾Ê½À´Ï´Ù");
+			}else if(!isMatches("[a-zA-Z0-9]{5,}",new String(pw_fld.getPassword()))){
+				client.warningMsg("ºñ¹Ğ¹øÈ£°¡ ¾ç½Ä¿¡ ¸ÂÁö¾Ê½À´Ï´Ù.");
 			}else if(!(new String(pw_fld.getPassword()).equals(
 				new String(pw_fld2.getPassword())))){
-				warningMsg("ºñ¹Ğ¹øÈ£°¡ ÀÏÄ¡ÇÏÁö ¾Ê½À´Ï´Ù.");
+				client.warningMsg("ºñ¹Ğ¹øÈ£°¡ ÀÏÄ¡ÇÏÁö ¾Ê½À´Ï´Ù.");
 			}else{//ok
-				
+				boolean ok = userDB.insertUser(name_fld.getText(), mail_fld.getText(), new String(pw_fld.getPassword()));
+				if(ok){
+					userDB.dbClose();
+					name_fld.setText("");
+					mail_fld.setText("");
+					code_fld.setText("");
+					pw_fld.setText("");
+					pw_fld2.setText("");
+					client.infoMsg("°¡ÀÔÀÌ ¿Ï·áµÇ¾ú½À´Ï´Ù.");
+					code = null;
+					client.changeCard("mainPanel");
+				}else{
+					client.warningMsg("°¡ÀÔ ¿¡·¯");
+					name_fld.setText("");
+					mail_fld.setText("");
+					code_fld.setText("");
+					pw_fld.setText("");
+					pw_fld2.setText("");
+					client.changeCard("mainPanel");
+				}
 			}
-			
 		});
 		backOrOk.add(back_btn);
 		backOrOk.add(ok_btn);
 		backOrOk.add(new JLabel(""));
 		backOrOk.setOpaque(false);
 		
-		form_pan.add(userName);
+		form_pan.add(userName_pan);
 		form_pan.add(mail_pan);
 		form_pan.add(code_pan);
 		form_pan.add(pw_pan);
 		form_pan.add(backOrOk);
 		
+		reserved.setSize(400,20);
+		reserved.setLocation(20, client.dcardH);
+		
+		add(reserved);
 		add(form_pan);
+		
 		
 		setVisible(true);
 	}
@@ -173,10 +201,6 @@ public class Join extends JPanel{
 			}
 		}
 		return sTmp.toString();
-	}
-	
-	private void warningMsg(String msg){
-		JOptionPane.showMessageDialog(null, msg,"°æ°í",JOptionPane.WARNING_MESSAGE);
 	}
 	
 	private boolean isMatches(String regex,String input){

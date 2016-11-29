@@ -31,10 +31,13 @@ public class Server extends JFrame {
 	ServerBack serverBack = new ServerBack();
 	Font default_font = new Font("맑은 고딕", Font.PLAIN, 14);
 	
+	final private String adminName = "System";
+	
 	public Server(){
-		setTitle("YC 서버 구동기");
+		setTitle("대화로 서버 구동기");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(800,550);
+		setSize(400,500);
+		setResizable(false);
 		serverBack.setGUI(this);
 		
 		//log - 자동 스크롤 최하단 이벤트 리스너
@@ -52,24 +55,25 @@ public class Server extends JFrame {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyChar() == '\n'){
-					String msg = "System : "+input_field.getText();
+					String msg = adminName+"-"+input_field.getText();
 					serverBack.send_message(msg);
 					append_log(msg);
 					input_field.setText("");
 				}
 			}
 		});
-		input_field_info.setSize(391,30);
+		input_field_info.setSize(199,30);
 		input_field_info.setLocation(0,0);
 		input_field_info.setFont(default_font);
-		input_field.setSize(391,30);
+		
+		input_field.setSize(199,30);
 		input_field.setLocation(0,30);
 		input_field.setFont(default_font);
 		input_field.setEnabled(false); // 비활성화
 		
 		//run_button
-		run_button.setSize(391,35);
-		run_button.setLocation(0,475);
+		run_button.setSize(199,35);
+		run_button.setLocation(0,70);
 		run_button.addActionListener(e->{
 			run_button.setEnabled(false); //버튼은 비활성화
 			input_field.setEnabled(true); //활성화

@@ -16,10 +16,12 @@ public class ServerBack {
 	//key = id(email), values = dataOutputStream
 	private Map<String , DataOutputStream> client_map = new HashMap<String, DataOutputStream>();
 	private ServerSocket serverSocket;
+	private Socket socket;
 	
 	final private int port = 6767;
 	
 	Server server; //GUI
+	
 	public final void setGUI(Server server){
 		this.server = server;
 	}
@@ -27,12 +29,43 @@ public class ServerBack {
 	public void start_back() throws Exception{
 		//thread 사용으로 인한 충돌 방지
 		Collections.synchronizedMap(client_map);
-		
 		serverSocket = new ServerSocket(port);
 		server.append_log("서버 준비완료");
-		ServerStart serverStart = new ServerStart();
-		serverStart.start();
+		ServerMain_thr smt = new ServerMain_thr();
+		smt.start();
 	}
+	class ServerMain_thr extends Thread{
+		@Override
+		public void run() {
+			while(true){
+				System.out.println("대기중..");
+				try {
+					socket = serverSocket.accept();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} //받아서
+				server.append_log(socket.getInetAddress()+" : 에서 접속함");
+				//thread start 쓰래도르 준다
+				Read read = new Read(socket);
+				read.start();
+			}
+		}
+	}
+	
+	public void addClient(String id, DataOutputStream out,String name) throws IOException {
+		//자신의 입장소식을 보지않음으로 Map 에 넣기전 전송
+		send_message(name+"-님이 접속하셨습니다.");
+		server.append_log(name+"-님이 접속하셨습니다.");
+		client_map.put(id, out);
+        send_message("system-"+client_map.size()+"명이 동시접속중입니다.");
+    }
+ 
+    public void removeClient(String id,String name) {
+    	send_message(name+"-님이 퇴장하셨습니다.");
+    	server.append_log(name+"-님이 퇴장하셨습니다.");
+    	client_map.remove(id);
+        send_message("system-"+client_map.size()+"명이 동시접속중입니다.");
+    }
 	
 	public void send_message(String msg){ //뿌리기
 		Iterator<DataOutputStream> it = client_map.values().iterator();
@@ -40,26 +73,7 @@ public class ServerBack {
 			try {
 				it.next().writeUTF(msg);
 			} catch (IOException e) {
-				//아마 전송도중 상대가 나가거나 하는 경우일것으로 예상
-				System.out.println("Error :: send_message()");
-				e.printStackTrace();
-			}
-		}
-	}
-	class ServerStart extends Thread{
-		@Override
-		public void run() {
-			while(true){
-				try{
-					System.out.println("대기중..");
-					Socket socket = serverSocket.accept(); //받아서
-					System.out.println(socket.getInetAddress()+" : 에서 접속함");
-					//thread start 쓰래도르 준다
-					Read read = new Read(socket);
-					read.start();
-				}catch(Exception e){
-					
-				}
+				System.out.println("out");
 			}
 		}
 	}
@@ -86,11 +100,8 @@ public class ServerBack {
 				String sTmp[] = in.readUTF().split("-");
 				id = sTmp[0];
 				name = sTmp[1];
-				//자신의 입장소식을 보지않음으로 Map 에 넣기전 전송
-				send_message(name+" 님이 입장하셨습니다.");
-				client_map.put(id,out);
+				addClient(id, out, name);
 			} catch (IOException e) {
-				System.out.println("앙기무띠");
 				e.printStackTrace();
 			}
 		}
@@ -101,12 +112,12 @@ public class ServerBack {
 				while(true){
 					String msg;
 					//시간남으면 비속어 필터링 클래스도 만들자
-					msg = name+" : "+in.readUTF(); //유저의 메세지를 받았을경우
+					msg = name+"-"+in.readUTF(); //유저의 메세지를 받았을경우
+					server.append_log(msg);
 					send_message(msg);
 				}
 			} catch (IOException e) {
-				//나갈떄 아마 readUTF 가 에러났던거같음 나중에 체크
-				send_message(name+" 님이 퇴장하셨습니다.");
+				removeClient(id,name);
 			}
 		}
 	}

@@ -20,6 +20,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import server.ServerBack;
+
 public class Client extends JFrame{
 	/*
 	 * 메인화면 -> mainPanel
@@ -28,10 +30,13 @@ public class Client extends JFrame{
 	 * 체팅 창 -> chat
 	 * 커스텀 으로 체팅모드를 지원 하거나 플레이어간의 미니게임이 있도록 만들계획
 	 */
+	private String name=null;
+	private String mail=null;
 	
 	JLabel title = new JLabel(":: 대화로 ::");
 	JButton small = new JButton();
 	JButton close = new JButton();
+	ClientBack clientBack;
 	
 	@Override //label change
 	public void setTitle(String title) {
@@ -47,6 +52,7 @@ public class Client extends JFrame{
 	MainPanel mainPanel;
 	Login login;
 	Join join;
+	Chat chat;
 	//---------------
 	
 	//def_size 360 550
@@ -140,10 +146,12 @@ public class Client extends JFrame{
 		mainPanel = new MainPanel(this); //start panel
 		login = new Login(this);
 		join = new Join(this);
+		chat = new Chat(this);
 		
 		card_con.add("mainPanel", mainPanel); //start panel
-		card_con.add("login",login);
+		card_con.add("login", login);
 		card_con.add("join", join);
+		card_con.add("chat", chat);
 		
 		container.add(top_con);
 		container.add(card_con);
@@ -163,6 +171,31 @@ public class Client extends JFrame{
 			setTitle(":: 로그인 ::");
 		}else if(str.equals("join")){
 			setTitle(":: 가입 ::");
+		}else if(str.equals("chat")){
+			setTitle(":: 체팅 ("+name+") ::");
+			clientBack = new ClientBack(); // back-end
+			clientBack.setChat(chat);
+			clientBack.conn(this);
 		}
+	}
+	
+	public void warningMsg(String msg){
+		JOptionPane.showMessageDialog(null, msg,"경고",JOptionPane.WARNING_MESSAGE);
+	}
+	public void infoMsg(String msg){
+		JOptionPane.showMessageDialog(null, msg,"경고",JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	public void setUserName(String name){
+		this.name = name;
+	}
+	public String getUserName(){
+		return this.name;
+	}
+	public void setMail(String mail){
+		this.mail = mail;
+	}
+	public String getMail(){
+		return this.mail;
 	}
 }
