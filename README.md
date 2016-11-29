@@ -1,3 +1,4 @@
 # messenger
 2016 - 1st grade 2st semester school-project (form&amp;jdbc project)</br>
-finished 16-11-29 PM 11:57
+finished 16-11-29 PM 11:57</br>
+(c)2016. By 나영채 All Rights Reserved.
