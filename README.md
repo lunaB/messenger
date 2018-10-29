@@ -1,10 +1,17 @@
 # messenger
-2016 - 1st grade 2st semester school-project (form&amp;jdbc project)</br>
-finished 16-11-29 PM 11:57</br>
-(c)2016. By 나영채 All Rights Reserved.
+2016 - 고등학교 1학년 2학기 자유프로젝트 수행평가</br>
 
-일주일 잡고 만든 메신저
-- 기능
-  - smtp 메일인증
-  - 정규식 활용
-  - jframe
+평가조건
+  - JDBC 사용
+  - Swing 사용
+제출시간
+  - 16-11-29 PM 11:57
+기능 & 기술
+  - 로그인 & 회원가입
+    - SMTP 메일인증
+    - 정규식
+  - JFrame
+  - Socket
+  - Thread
+소개<br>
+서버와 클라이언트를 따로 개발하였슴 평범한 소켓통신 프로그램이지만 수행평가 의도에 맞게 개발하기위해 정당한 이름을 붙이고 몇몇추가기능을 더함.
