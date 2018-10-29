@@ -17,6 +17,7 @@
   - 로그인 & 회원가입
     - SMTP 메일인증
     - 정규식
-  - JFrame
+    - JDBC
+  - Swing JFrame
   - Socket
   - Thread
