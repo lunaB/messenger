@@ -20,3 +20,5 @@
   - Swing JFrame
   - Socket
   - Thread
+
+> PPT는 약간의 일반인 패치가 덜풀려서 이과감성이 아니다 ( 오글거린다 )
